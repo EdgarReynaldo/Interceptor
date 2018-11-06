@@ -3,7 +3,7 @@
 
 
 #include "Circle.hpp"
-
+#include "Vector2.hpp"
 
 #include <cmath>
 
@@ -27,6 +27,19 @@ bool MakeCirclesReverse(Circle* c1 , Circle* c2) {
 
 bool MakeCirclesBounce(Circle* c1 , Circle* c2) {
    if (!c1 || !c2) {return false;}
+   
+   /// Normalized normal vectors, these point from one circle towards the other
+   Vec2 N1 = Vec2(c2->cx - c1->cx , c2->cy - c1->cy).Normalize();
+   Vec2 N2 = Vec2(c1->cx - c2->cx , c1->cy - c2->cy).Normalize();
+   
+   Vec2 V1(c1->vx , c1->vy);
+   Vec2 V2(c2->vx , c2->vy);
+   
+   Vec2 I1 = V1*c1->mass;
+   Vec2 I2 = V2*c2->mass;
+   Vec2 Itotal = I1 + I2;
+   
+   /// The angle between V and N determines how much energy is transferred
    
    
    
