@@ -10,6 +10,9 @@
 #include "allegro5/allegro_primitives.h"
 
 
+extern double ELASTICITY;
+extern double EPSILON;
+
 
 class Circle;
 
