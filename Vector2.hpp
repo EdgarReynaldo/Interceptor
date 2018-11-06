@@ -8,15 +8,10 @@
 #include <cmath>
 
 class Vec2 {
-protected :
+public :
    double x;
    double y;
-   
-   
-   
-   
-public :
-   
+
    Vec2(double xval , double yval);
    
    void Set(double xval , double yval);
@@ -25,18 +20,20 @@ public :
    Vec2& operator*=(double f);
    Vec2& operator+=(const Vec2& v);
    
+   inline Vec2 operator-() {return Vec2(-x,-y);}
+   
 ///   double Magnitude();
    inline double Magnitude() {
       return sqrt(x*x + y*y);
    }
 
-   friend inline Vec2 operator+(const Vec2& v1 , const Vec2& v2);
-   friend inline double DotProduct(const Vec2& v1 , const Vec2& v2);
-   friend inline Vec2 operator*(const Vec2& v , double f);
 };
 
 
 inline Vec2 operator+(const Vec2& v1 , const Vec2& v2) {
+   return Vec2(v1.x + v2.x , v1.y + v2.y);
+}
+inline Vec2 operator-(const Vec2& v1 , const Vec2& v2) {
    return Vec2(v1.x + v2.x , v1.y + v2.y);
 }
 
