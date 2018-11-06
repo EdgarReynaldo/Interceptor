@@ -51,7 +51,7 @@ class CollTable {
    
    void BuildCollTable();
 
-   std::vector<CollInfo*> GetFutureCollisionsEarlierThanDT(double dt);
+   std::vector<CollInfo*> GetFirstCollisionsEarlierThanDT(double dt);
 
 public :
    

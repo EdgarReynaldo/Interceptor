@@ -99,13 +99,20 @@ void CollTable::BuildCollTable() {
 
 
 
-std::vector<CollInfo*> CollTable::GetFutureCollisionsEarlierThanDT(double dt) {
+std::vector<CollInfo*> CollTable::GetFirstCollisionsEarlierThanDT(double dt) {
    std::vector<CollInfo*> clist;
    const unsigned int N = ctable.size();
+   double first = -1.0;
    for (unsigned int n = 0 ; n < N ; ++n) {
       CollInfo& info = ctable[n];
-      if (info.dt < 0.0) {continue;}
+      if (info.dt <= 0.0) {continue;}
       if (info.dt > dt) {continue;}
+      if (first < 0.0) {
+         first = info.dt;
+      }
+      if (info.dt > first) {
+         break;
+      }
       clist.push_back(&ctable[n]);
    }
    std::sort(clist.begin() , clist.end() , CompareCInfo);
@@ -208,7 +215,7 @@ void CollTable::UpdateCollisionTableAndResolve(double dt) {
    double dtrem = dt;
    do {
       RecalculateCollTable();
-      collisions = GetFutureCollisionsEarlierThanDT(dt);
+      collisions = GetFirstCollisionsEarlierThanDT(dt);
       double tfirst = collisions.size()?collisions[0]->dt:dtrem;/// The first collision, or dt if none
       dtrem -= tfirst;
       

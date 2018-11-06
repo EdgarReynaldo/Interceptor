@@ -38,30 +38,45 @@ bool MakeCirclesBounce(Circle* c1 , Circle* c2) {
    Vec2 V1(c1->vx , c1->vy);
    Vec2 V2(c2->vx , c2->vy);
    
-   Vec2 I1 = V1*c1->mass;
-   Vec2 I2 = V2*c2->mass;
+   const double m1 = c1->mass;
+   const double m2 = c2->mass;
+
+   Vec2 I1 = V1*m1;
+   Vec2 I2 = V2*m2;
 ///   double Itotal = (I1 + I2).Magnitude();
    
    /// The angle between V and N determines how much energy is transferred
    
-   double cosA1 = DotProduct(I1 , N1)/(I1.Magnitude()*1.0);/// Magnitude of N is always 1, they're normalized
-   double cosA2 = DotProduct(I2 , N2)/(I2.Magnitude()*1.0);/// Magnitude of N is always 1, they're normalized
-   Vec2 I1N = N1*cosA1*I1.Magnitude();
-   Vec2 I2N = N2*cosA2*I2.Magnitude();
+   const double I1M = I1.Magnitude();
+   const double I2M = I2.Magnitude();
+
+   double cosA1 = 0.0;
+   double cosA2 = 0.0;
    
+   if (I1M > 0.0) {
+      cosA1 = DotProduct(I1 , N1)/I1M;/// Magnitude of N is always 1, they're normalized
+   }
+   if (I2M > 0.0) {/// Object has momentum
+      cosA2 = DotProduct(I2 , N2)/I2M;/// Magnitude of N is always 1, they're normalized
+   }
+   
+   Vec2 I1N = N1*cosA1*I1M;/// Momentum of circle one in the normal direction
+   Vec2 I2N = N2*cosA2*I2M;/// Momentum of circle two in the normal direction
+
    if (cosA1 > 0.0) {
       /// Circle one is moving towards circle two
       /// Give circle ones normal momentum to circle two
-      I1 = I1 - I1N;/// This momentum is lost, transferred to 
+      I1 = I1 - I1N;/// This momentum is lost, transferred to the other circle
       I1N *= ELASTICITY;/// Energy is lost due to inelasticity
       if (c2->fixed) {/// We hit an immovable object
          I1N *= -1.0;/// Reflection of normal energy
-         I1 += I1N;/// 
+         I1 += I1N;/// rebound effect
       }
       else {
-         I2 = I2 + I1N;/// The remaining momentum is gained
+         I2 = I2 + I1N;/// The remaining momentum is gained by the other circle
       }
    }
+
    if (cosA2 > 0.0) {
       /// Circle two is moving towards circle one
       /// Give circle twos normal momentum to circle one
@@ -69,25 +84,22 @@ bool MakeCirclesBounce(Circle* c1 , Circle* c2) {
       I2N *= ELASTICITY;/// Energy lost due to inelasticity
       if (c1->fixed) {/// We hit an immovable object
          I2N *= -1.0;/// Reflection of normal energy
-         I2 = I2 + I2N;
+         I2 += I2N;/// rebound effect
       }
       else {
-         I1 = I1 + I2N;/// The remaining momentum is gained
+         I1 = I1 + I2N;/// The remaining momentum is gained by the other circle
       }
    }
-   
 ///   double Itotal2 = (I1 + I2).Magnitude();
    
    bool changed = false;
-   double m1 = c1->mass;
-   double m2 = c2->mass;
    if (!c1->fixed && m1 > 0.0) {
       V1 = I1*(1.0/m1);
       c1->SetSpeed(V1.x , V1.y);
       changed = true;
    }
    if (!c2->fixed && m2 > 0.0) {
-      V2 = I2*(1.0/c2->mass);
+      V2 = I2*(1.0/m2);
       c2->SetSpeed(V2.x , V2.y);
       changed = true;
    }
