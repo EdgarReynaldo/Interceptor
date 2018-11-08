@@ -38,11 +38,11 @@ bool MakeCirclesBounce(Circle* c1 , Circle* c2) {
    Vec2 V1(c1->vx , c1->vy);
    Vec2 V2(c2->vx , c2->vy);
    
-   const double m1 = 1.0;///c1->mass;
-   const double m2 = 1.0;///c2->mass;
+   const double m1 = c1->mass;
+   const double m2 = c2->mass;
 
-   Vec2 I1 = V1;///*m1;
-   Vec2 I2 = V2;///*m2;
+   Vec2 I1 = V1*m1;
+   Vec2 I2 = V2*m2;
 ///   double Itotal = (I1 + I2).Magnitude();
    
    /// The angle between V and N determines how much energy is transferred
@@ -121,11 +121,11 @@ bool MakeCirclesBounce2(Circle* c1 , Circle* c2) {
    Vec2 V1(c1->vx , c1->vy);
    Vec2 V2(c2->vx , c2->vy);
    
-   const double m1 = 1.0;///c1->mass;
-   const double m2 = 1.0;///c2->mass;
+   const double m1 = c1->mass;
+   const double m2 = c2->mass;
 
-   Vec2 I1 = V1;///*m1;
-   Vec2 I2 = V2;///*m2;
+   Vec2 I1 = V1*m1;
+   Vec2 I2 = V2*m2;
 ///   double Itotal = (I1 + I2).Magnitude();
    
    /// The angle between V and N determines how much energy is transferred
@@ -133,21 +133,15 @@ bool MakeCirclesBounce2(Circle* c1 , Circle* c2) {
    const double I1M = I1.Magnitude();
    const double I2M = I2.Magnitude();
 
-   double cosA1 = 0.0;
-   double cosA2 = 0.0;
-   
-   Vec2 I1N(0,0);///N1*cosA1*I1M;/// Momentum of circle one in the normal direction
-   Vec2 I2N(0,0);/// = N2*cosA2*I2M;/// Momentum of circle two in the normal direction
+   Vec2 I1N(0,0);/// Momentum of circle one in the normal direction
+   Vec2 I2N(0,0);/// Momentum of circle two in the normal direction
+
    if (I1M > 0.0) {
-      I1N = ScalarProjection(I1 , N1);/// /I1M;/// Magnitude of N is always 1, they're normalized
+      I1N = ScalarProjection(I1 , N1);/// Magnitude of N is always 1, they're normalized
    }
    if (I2M > 0.0) {/// Object has momentum
-///      cosA2 = DotProduct(I2 , N2)/I2M;/// Magnitude of N is always 1, they're normalized
-      I2N = ScalarProjection(I2 , N2);/// /I2M;/// Magnitude of N is always 1, they're normalized
+      I2N = ScalarProjection(I2 , N2);/// Magnitude of N is always 1, they're normalized
    }
-   
-///   Vec2 I1N = N1*cosA1*I1M;/// Momentum of circle one in the normal direction
-///   Vec2 I2N = N2*cosA2*I2M;/// Momentum of circle two in the normal direction
 
    if (DotProduct(I1,N1) > 0.0) {
       /// Circle one is moving towards circle two

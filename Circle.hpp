@@ -9,7 +9,7 @@
 #include "allegro5/allegro.h"
 #include "allegro5/allegro_primitives.h"
 
-
+#include "Arrow.hpp"
 extern double ELASTICITY;
 extern double EPSILON;
 
@@ -44,6 +44,9 @@ public :
    
    inline void Draw(ALLEGRO_COLOR col) {
       al_draw_circle(cx , cy , rad , col , 3.0);
+      Vec2 c(cx,cy);
+      Vec2 v(vx,vy);
+      DrawArrow(c , c + v , al_map_rgb(0,0,255));
    }
 ///   inline void SetSpeed(double sx , double sy);
    inline void SetSpeed(double sx , double sy) {

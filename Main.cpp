@@ -159,7 +159,7 @@ int main(int argc , char** argv) {
             if (ev.mouse.button == 1) {
                lmb = true;
                if (NC < NCMAX + 1) {
-                  circvec[NC] = Circle(sw/2.0 , sh/2.0 , 25.0);
+                  circvec[NC] = Circle(sw/2.0 , sh/2.0 , 15.0);
                   circvec[NC].SetSpeed(10*(msx - sw/2),10*(msy - sh/2));
                   ctable.AddCircle(&circvec[NC]);
                   ++NC;
@@ -167,6 +167,12 @@ int main(int argc , char** argv) {
             }
             else if (ev.mouse.button == 2) {
                rmb = true;
+               if (NC < NCMAX + 1) {
+                  circvec[NC] = Circle(sw/2.0 , sh/2.0 , 40.0);
+                  circvec[NC].SetSpeed(10*(msx - sw/2),10*(msy - sh/2));
+                  ctable.AddCircle(&circvec[NC]);
+                  ++NC;
+               }
             }
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
