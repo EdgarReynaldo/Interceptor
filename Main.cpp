@@ -13,8 +13,8 @@
 
 #include "Circle.hpp"
 #include "CollTable.hpp"
-
-
+#include "Vector2.hpp"
+#include "Arrow.hpp"
 
 const int sw = 800;
 const int sh = 600;
@@ -42,7 +42,7 @@ int main(int argc , char** argv) {
    
    ALLEGRO_FONT* f = al_load_ttf_font("Verdana.ttf" , -36 , 0);
    
-   if (!d || !q || !t || !f) {
+   if (!d || !q || !t) {
       printf("Setup incomplete.\n");
       return 1;
    }
@@ -86,9 +86,13 @@ int main(int argc , char** argv) {
    ctable.AddCircle(b4);
    
 
+   Vec2 p1(sw/2,sh/2);
+   Vec2 p2(sw/2,sh/2);
+   
    int msx = 0;
    int msy = 0;
-   
+   bool lmb = false;
+   bool rmb = false;
    bool quit = false;
    bool redraw = true;
    
@@ -106,13 +110,19 @@ int main(int argc , char** argv) {
             Circle* c = &circvec[i];
             c->Draw(al_map_rgb(255,255,255));
          }
+         
+         Vec2 c(sw/2,sh/2);
+         DrawArrow(c , p1 , al_map_rgb(255,255,255));
+         DrawArrow(c , p2 , al_map_rgb(0,255,0));
+         DrawArrow(c , c + ScalarProjection(p1-c,p2-c) , al_map_rgb(255,0,0));
+
          for (unsigned int i = 4 ; i < NC ; ++i) {
             Circle* c = &circvec[i];
             if (c->active) {
                c->Draw(al_map_rgb(0,255,0));
             }
          }
-         
+
          al_flip_display();
          redraw = false;
       }
@@ -126,15 +136,48 @@ int main(int argc , char** argv) {
             quit = true;
          }
          if (ev.type == ALLEGRO_EVENT_TIMER) {
+            if (lmb) {
+            }
             ctable.UpdateCollisionTableAndResolve(DT);
             redraw = true;
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {
-            msx = ev.mouse.x - sw/2.0;
-            msy = ev.mouse.y - sh/2.0;
+
+            msx = ev.mouse.x;
+            msy = ev.mouse.y;
+//            msx = ev.mouse.x - sw/2.0;
+//            msy = ev.mouse.y - sh/2.0;
+            if (lmb) {
+               p1.Set(msx,msy);
+            }
+            else if (rmb) {
+               p2.Set(msx,msy);
+            }
             /// msx,msy holds the vector from the center of the sceen to the mouse pointer
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+            if (ev.mouse.button == 1) {
+               lmb = true;
+               if (NC < NCMAX + 1) {
+                  circvec[NC] = Circle(sw/2.0 , sh/2.0 , 25.0);
+                  circvec[NC].SetSpeed(10*(msx - sw/2),10*(msy - sh/2));
+                  ctable.AddCircle(&circvec[NC]);
+                  ++NC;
+               }
+            }
+            else if (ev.mouse.button == 2) {
+               rmb = true;
+            }
+         }
+         if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+            if (ev.mouse.button == 1) {
+               lmb = false;
+            }
+            else if (ev.mouse.button == 2) {
+               rmb = false;
+            }
+         }
+         /*
             if (ev.mouse.button == 1) {
                if (NC < NCMAX + 1) {
                   circvec[NC] = Circle(sw/2.0 , sh/2.0 , 25.0);
@@ -143,8 +186,8 @@ int main(int argc , char** argv) {
                   ++NC;
                }
             }
-         }
-         
+         */
+            
       } while (!al_is_event_queue_empty(q));
    }
    

@@ -12,6 +12,7 @@ public :
    double x;
    double y;
 
+   Vec2() : x(0.0),y(0.0) {}
    Vec2(double xval , double yval);
    
    void Set(double xval , double yval);
@@ -44,7 +45,13 @@ inline Vec2 operator*(const Vec2& v , double f) {
 
 ///double DotProduct(const Vec2& v1 , const Vec2& v2);
 inline double DotProduct(const Vec2& v1 , const Vec2& v2) {
-   return v1.x*v2.y + v2.x*v1.y;
+   return v1.x*v2.x + v1.y*v2.y;
 }
+
+inline Vec2 VectorA(double arad , double l) {return Vec2(l*cos(arad),l*sin(arad));}
+
+Vec2 ScalarProjection(Vec2 A , Vec2 B);
+
+
 
 #endif // Vector2_HPP

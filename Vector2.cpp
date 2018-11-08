@@ -22,6 +22,7 @@ void Vec2::Set(double xval , double yval) {
 
 
 Vec2& Vec2::Normalize() {
+   if (x == 0.0 && y == 0.0) {return *this;}
    const double mag = sqrt(x*x + y*y);
    x /= mag;
    y /= mag;
@@ -44,6 +45,10 @@ Vec2& Vec2::operator+=(const Vec2& v) {
 
 
 
+Vec2 ScalarProjection(Vec2 A , Vec2 B) {
+   B.Normalize();
+   return B*DotProduct(A,B);
+}
 
 
 

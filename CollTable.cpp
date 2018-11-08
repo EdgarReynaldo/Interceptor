@@ -105,7 +105,7 @@ std::vector<CollInfo*> CollTable::GetFirstCollisionsEarlierThanDT(double dt) {
    double first = -1.0;
    for (unsigned int n = 0 ; n < N ; ++n) {
       CollInfo& info = ctable[n];
-      if (info.dt <= 0.0) {continue;}
+      if (info.dt < 0.0) {continue;}
       if (info.dt > dt) {continue;}
       if (first < 0.0) {
          first = info.dt;

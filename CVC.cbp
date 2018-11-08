@@ -104,6 +104,8 @@
 		<Unit filename="CollTable.cpp" />
 		<Unit filename="CollTable.hpp" />
 		<Unit filename="Main.cpp" />
+		<Unit filename="Vector2.cpp" />
+		<Unit filename="Vector2.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
