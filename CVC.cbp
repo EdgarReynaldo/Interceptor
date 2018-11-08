@@ -99,10 +99,16 @@
 		<Linker>
 			<Add directory="E:/LIBS/LIBS81Distro/Allegro524_mingw-w64-gcc81_posix_dwarf/lib" />
 		</Linker>
+		<Unit filename="Arrow.cpp" />
+		<Unit filename="Arrow.hpp" />
 		<Unit filename="Circle.cpp" />
 		<Unit filename="Circle.hpp" />
 		<Unit filename="CollTable.cpp" />
 		<Unit filename="CollTable.hpp" />
+		<Unit filename="GenLine2.cpp" />
+		<Unit filename="GenLine2.hpp" />
+		<Unit filename="LineSeg2.cpp" />
+		<Unit filename="LineSeg2.hpp" />
 		<Unit filename="Main.cpp" />
 		<Unit filename="Vector2.cpp" />
 		<Unit filename="Vector2.hpp" />
