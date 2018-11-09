@@ -226,7 +226,7 @@ bool Overlaps(const Circle& c1 , const Circle& c2) {
    const double rsq = c1.rad*c1.rad + c2.rad*c2.rad;
    const double dx = c2.cx - c1.cx;
    const double dy = c2.cy - c1.cy;
-   return rsq >= dx*dx + dy*dy;
+   return rsq > dx*dx + dy*dy;
 }
 
 

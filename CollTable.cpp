@@ -111,7 +111,7 @@ std::vector<CollInfo*> CollTable::GetFirstCollisionsEarlierThanDT(double dt) {
          first = info.dt;
       }
       if (info.dt > first) {
-         break;
+         continue;
       }
       clist.push_back(&ctable[n]);
    }
@@ -208,32 +208,61 @@ void CollTable::RecalculateCollTable() {
    
 
 
-void CollTable::UpdateCollisionTableAndResolve(double dt) {
-   if (dt <= 0.0) {return;}
+int CollTable::UpdateCollisionTableAndResolve(double dt) {
+   int overlapcount = 0;
+   if (dt <= 0.0) {return 0;}
    
    std::vector<CollInfo*> collisions;
    double dtrem = dt;
    do {
+      overlapcount = 0;
       RecalculateCollTable();
-      collisions = GetFirstCollisionsEarlierThanDT(dt);
+      collisions = GetFirstCollisionsEarlierThanDT(dtrem);
+      if (collisions.size()) {printf("%d collisions\n" , (int)collisions.size());}
       double tfirst = collisions.size()?collisions[0]->dt:dtrem;/// The first collision, or dt if none
       dtrem -= tfirst;
       
       for (unsigned int ci = 0 ; ci < circles.size() ; ++ci) {
          Circle* c = circles[ci];
          if (c && c->active) {
-            c->Update(tfirst);
+            
+            Circle copy = *c;
+            copy.Update(tfirst);
+            
+            for (unsigned int cj = 0 ; cj < circles.size() ; ++cj) {
+               Circle* c2 = circles[cj];
+               if (ci == cj) {continue;}
+               if (c2 && Overlaps(copy , *c2)) {
+                   printf("Circle %u started to overlap circle %u.\n" , ci , cj);
+               }
+            }
+
+            *c = copy;
+            
          }
       }
       for (unsigned int i = 0 ; i < ctable.size() ; ++i) {
          CollInfo* cinfo = &ctable[i];
          cinfo->dt -= tfirst;
       }
-      
+/**
+      for (unsigned int i = 0 ; i < ctable.size() ; ++i) {
+         CollInfo* cinfo = &ctable[i];
+         cinfo->dt -= tfirst;
+         Circle* c1 = circles[cinfo->circles.first];
+         Circle* c2 = circles[cinfo->circles.second];
+         if (c1 && c2 && Overlaps(*c1 , *c2)) {
+            overlapcount++;
+         }
+      }
+*/      
       for (unsigned int cl = 0 ; cl < collisions.size() ; ++cl) {
          CollInfo* cinfo = collisions[cl];
+         if (cinfo->dt != 0.0) {
+            printf("Houston we have a problem.\n");
+         }
          if (cinfo->dt == 0.0) {
-            printf("collision\n");
+//            printf("collision\n");
             Circle* c1 = circles[cinfo->circles.first];
             Circle* c2 = circles[cinfo->circles.second];
             if (cresolver) {
@@ -246,6 +275,7 @@ void CollTable::UpdateCollisionTableAndResolve(double dt) {
       }
       dt = dtrem;
    } while ((dt > 0.0) && collisions.size());
+   return overlapcount;
 }
 
 

@@ -16,8 +16,8 @@
 #include "Vector2.hpp"
 #include "Arrow.hpp"
 
-const int sw = 800;
-const int sh = 600;
+const int sw = 1024;
+const int sh = 768;
 const double DT = 1.0/60.0;
 
 
@@ -42,7 +42,9 @@ int main(int argc , char** argv) {
    
    ALLEGRO_FONT* f = al_load_ttf_font("Verdana.ttf" , -36 , 0);
    
-   if (!d || !q || !t) {
+   ALLEGRO_BITMAP* buf = al_create_bitmap(sw,sh);
+   
+   if (!d || !q || !t || !f || !buf) {
       printf("Setup incomplete.\n");
       return 1;
    }
@@ -91,10 +93,12 @@ int main(int argc , char** argv) {
    
    int msx = 0;
    int msy = 0;
+   int ticks = 0;
    bool lmb = false;
    bool rmb = false;
    bool quit = false;
    bool redraw = true;
+   bool clear = true;
    
    al_show_mouse_cursor(d);
    
@@ -102,15 +106,24 @@ int main(int argc , char** argv) {
    
    while (!quit) {
       if (redraw) {
-         al_set_target_backbuffer(d);
-         al_clear_to_color(al_map_rgb(0,0,0));
-         
-         /// Draw board here
-         for (unsigned int i = 0 ; i < 4 ; ++i) {
-            Circle* c = &circvec[i];
-            c->Draw(al_map_rgb(255,255,255));
+         al_set_target_bitmap(buf);
+         if (clear) {
+            al_clear_to_color(al_map_rgb(0,0,0));
          }
          
+         /// Draw board here
+         int ec = 0;
+         for (unsigned int i = 0 ; i < 4 ; ++i) {
+            Circle* c = &circvec[i];
+            c->DrawHollow(al_map_rgb(255,255,255));
+         }
+         
+         for (unsigned int j = 4 ; j < NC ; ++j) {
+            Circle* c = &circvec[j];
+            if (c->cx < 0.0 || c->cx > sw || c->cy < 0.0 || c->cy > sh) {
+               ++ec;
+            }
+         }
          Vec2 c(sw/2,sh/2);
          DrawArrow(c , p1 , al_map_rgb(255,255,255));
          DrawArrow(c , p2 , al_map_rgb(0,255,0));
@@ -120,11 +133,26 @@ int main(int argc , char** argv) {
             Circle* c = &circvec[i];
             if (c->active) {
                c->Draw(al_map_rgb(0,255,0));
+               al_draw_textf(f , al_map_rgb(0,255,0) , c->cx , c->cy - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
+            }
+            for (unsigned int j = 0 ; j < NC ; ++j) {
+               if (i == j) {continue;}
+               Circle* c2 = &circvec[j];
+               if (c && c2 && Overlaps(*c , *c2)) {
+                  c->Draw(al_map_rgb(255,0,0));
+                  c2->Draw(al_map_rgb(255,0,0));
+                  al_draw_textf(f , al_map_rgb(0,0,255) , c->cx , c->cy - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
+               }
             }
          }
+         
+         al_draw_textf(f , al_map_rgb(0,255,255) , sw/2 , 10 , ALLEGRO_ALIGN_CENTER , "Escape count %d" , ec);
 
+         al_set_target_backbuffer(d);
+         al_draw_bitmap(buf , 0 , 0 , 0);
          al_flip_display();
          redraw = false;
+         ticks = 0;
       }
       do {
          ALLEGRO_EVENT ev;
@@ -135,11 +163,18 @@ int main(int argc , char** argv) {
          if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             quit = true;
          }
+         if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_R) {
+            clear = !clear;
+            redraw = true;
+         }
          if (ev.type == ALLEGRO_EVENT_TIMER) {
             if (lmb) {
             }
-            ctable.UpdateCollisionTableAndResolve(DT);
             redraw = true;
+            ++ticks;
+            if (ticks == 1) {
+               ctable.UpdateCollisionTableAndResolve(DT);
+            }
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {
 

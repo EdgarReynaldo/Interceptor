@@ -67,7 +67,7 @@ public :
 
    void RecalculateCollTable();
 
-   void UpdateCollisionTableAndResolve(double dt);
+   int UpdateCollisionTableAndResolve(double dt);
 
    void MarkDirty();
    

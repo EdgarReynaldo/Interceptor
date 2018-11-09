@@ -43,6 +43,14 @@ public :
    inline bool Overlaps(const Circle& c) {return ::Overlaps(*this , c);}
    
    inline void Draw(ALLEGRO_COLOR col) {
+      al_draw_filled_circle(cx , cy , rad , al_map_rgb(0,0,0));
+      al_draw_circle(cx , cy , rad , col , 3.0);
+      Vec2 c(cx,cy);
+      Vec2 v(vx,vy);
+      DrawArrow(c , c + v , al_map_rgb(0,0,255));
+   }
+   inline void DrawHollow(ALLEGRO_COLOR col) {
+///      al_draw_filled_circle(cx , cy , rad , al_map_rgb(0,0,0));
       al_draw_circle(cx , cy , rad , col , 3.0);
       Vec2 c(cx,cy);
       Vec2 v(vx,vy);
