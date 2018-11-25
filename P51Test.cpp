@@ -1,32 +1,24 @@
 
 
+#include "P51TestCode.h"
+#include "QuadRootsRevJ.h"
 
-#include <cstdio>
-#include <cmath>
-
-
+#include "src/Intercept.hpp"
+#include "src/Object.hpp"
 
 #include "allegro5/allegro.h"
-#include "allegro5/allegro_primitives.h"
 #include "allegro5/allegro_font.h"
 #include "allegro5/allegro_ttf.h"
+#include "allegro5/allegro_primitives.h"
 
-#include "Object.hpp"
-#include "CollTable.hpp"
-#include "Vector2.hpp"
-#include "Arrow.hpp"
-#include "Triangles.hpp"
-#include "Overlap.hpp"
-#include "Intercept.hpp"
-
+#include <cstdio>
 
 
 const int sw = 1024;
 const int sh = 768;
 const double DT = 1.0/60.0;
 
-
-int main2(int argc , char** argv) {
+int main(int argc , char** argv) {
    
    (void)argc;
    (void)argv;
@@ -68,53 +60,6 @@ int main2(int argc , char** argv) {
    CObject o1(sw/2.0 , sh/2.0 , 50);
    CObject o2(sw/4.0 , sh/2.0 , 50);
    
-   
-   
-   
-   
-   
-   
-   unsigned int NCMAX = 2000;/// This takes 1000*1999 collision pairs at max capacity
-   unsigned int NC = 5;
-   
-   std::vector<CObject> circvec(NCMAX + 1 , CObject());
-   
-   double rad1 = sqrt(sw*sw*9.0/4.0 + sh*sh/4.0);
-   double rad2 = sqrt(sw*sw/4.0 + sh*sh*9.0/4.0); 
-   /// Circular boundaries
-   circvec[0] = CObject(-3.0*sw/2.0 , sh/2.0 , rad1);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
-   circvec[1] = CObject(5.0*sw/2.0 , sh/2.0 , rad1);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
-   circvec[2] = CObject(sw/2.0 , -3.0*sh/2.0 , rad2);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
-   circvec[3] = CObject(sw/2.0 , 5.0*sh/2.0 , rad2);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
-   circvec[4] = CObject(sw/2.0 - 5 , sh/2.0 , 60);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
-   circvec[4].SetAccel(0,20);
-   
-   CollTable ctable;
-   ctable.ReserveN(100);
-
-   CObject* b1 = &circvec[0];
-   CObject* b2 = &circvec[1];
-   CObject* b3 = &circvec[2];
-   CObject* b4 = &circvec[3];
-   CObject* c1 = &circvec[4];
-   
-   b1->fixed = true;
-   b2->fixed = true;
-   b3->fixed = true;
-   b4->fixed = true;
-   
-   ctable.AddObject(b1);
-   ctable.AddObject(b2);
-   ctable.AddObject(b3);
-   ctable.AddObject(b4);
-   ctable.AddObject(c1);
-   
-   
-   Triangle tri1(Vec2(200 , 250) , Vec2(824 , 250) , Vec2(512 , 500));
-
-   Vec2 p1(sw/2,sh/2);
-   Vec2 p2(sw/2,sh/2);
-   
    int msx = 0;
    int msy = 0;
    int ticks = 0;
@@ -136,60 +81,13 @@ int main2(int argc , char** argv) {
             al_clear_to_color(al_map_rgb(0,0,0));
          }
          
-         double t = GetInterceptTime(o1 , o2);
-         
          o1.Draw(al_map_rgb(255,0,0));
          o2.Draw(al_map_rgb(255,255,0));
+
+         double t = GetInterceptTime(o1 , o2);
          
          al_draw_textf(f , al_map_rgb(255,255,255) , sw/2.0 , 10.0 , ALLEGRO_ALIGN_CENTER , "DT = %6.3lf" , t);
          
-/*
-         
-         /// Draw board here
-         int ec = 0;
-         for (unsigned int i = 0 ; i < 4 ; ++i) {
-            CObject* c = &circvec[i];
-            c->DrawHollow(al_map_rgb(255,255,255));
-         }
-         
-         for (unsigned int j = 4 ; j < NC ; ++j) {
-            CObject* c = &circvec[j];
-            if (c->mov.pos.x < 0.0 || c->mov.pos.x > sw || c->mov.pos.y < 0.0 || c->mov.pos.y > sh) {
-               ++ec;
-            }
-         }
-         Vec2 c(sw/2,sh/2);
-         DrawArrow(c , p1 , al_map_rgb(255,255,255));
-         DrawArrow(c , p2 , al_map_rgb(0,255,0));
-         DrawArrow(c , c + ScalarProjection(p1-c,p2-c) , al_map_rgb(255,0,0));
-         for (unsigned int i = 4 ; i < NC ; ++i) {
-            CObject* c = &circvec[i];
-            if (c->active) {
-               c->Draw(al_map_rgb(0,255,0));
-               al_draw_textf(f , al_map_rgb(0,255,0) , c->mov.pos.x , c->mov.pos.y - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
-            }
-            for (unsigned int j = 0 ; j < NC ; ++j) {
-               if (i == j) {continue;}
-               CObject* c2 = &circvec[j];
-               if (c && c2 && Overlaps(*c , *c2)) {
-                  c->Draw(al_map_rgb(255,0,0));
-                  c2->Draw(al_map_rgb(255,0,0));
-                  al_draw_textf(f , al_map_rgb(0,0,255) , c->mov.pos.x , c->mov.pos.y - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
-               }
-            }
-         }
-*/
-         
-///         tri1.Draw(al_map_rgb(0 , 0 , 0) , al_map_rgb(255,255,255) , 3.0);
-         
-///         TRISIDE side = GetTriSide(Vec2(msx,msy) , tri1);
-         
-///         const char* text = (side == TRI_INSIDE)?"Inside":(side == TRI_OUTSIDE)?"Outside":"On Edge";
-         
-///         al_draw_textf(f , al_map_rgb(255,255,255) , sw/2 , sh/2 - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTER , "%s" , text);
-         
-///         al_draw_textf(f , al_map_rgb(0,255,255) , sw/2 , 10 , ALLEGRO_ALIGN_CENTER , "Escape count %d" , ec);
-
          al_set_target_backbuffer(d);
          al_draw_bitmap(buf , 0 , 0 , 0);
          al_flip_display();
@@ -207,6 +105,11 @@ int main2(int argc , char** argv) {
          }
          if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_R) {
             clear = !clear;
+            redraw = true;
+         }
+         if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_S) {
+            o2.mov.vel.Set(0,0);
+            o2.mov.acc.Set(0,0);
             redraw = true;
          }
          if (ev.type == ALLEGRO_EVENT_TIMER) {
@@ -258,6 +161,7 @@ int main2(int argc , char** argv) {
       } while (!al_is_event_queue_empty(q));
    }
    
-   
    return 0;
 }
+
+

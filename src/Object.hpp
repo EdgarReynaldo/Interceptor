@@ -28,6 +28,11 @@ public :
    inline void Reverse() {vel = -vel;}
    inline void ReflectX() {vel = Vec2(-vel.x , vel.y);}
    inline void ReflectY() {vel = Vec2(vel.x , -vel.y);}
+   inline void Update(double dt) {
+      pos += vel*dt + acc*dt*dt*(0.5);
+      vel += acc*dt;
+   }
+   MoveInfo FutureInfo(double dt);
 };
 
 MoveInfo operator-(const MoveInfo& info2 , const MoveInfo& info1);
@@ -86,17 +91,12 @@ public :
    
    
    
-   inline void Draw(ALLEGRO_COLOR col) {
-      al_draw_filled_circle(mov.pos.x , mov.pos.y , rad , al_map_rgb(0,0,0));
-      al_draw_circle(mov.pos.x , mov.pos.y , rad , col , 3.0);
-      DrawArrow(mov.pos , mov.pos + mov.vel , al_map_rgb(0,0,255));
-   }
-   inline void DrawHollow(ALLEGRO_COLOR col) {
-///      al_draw_filled_circle(cx , cy , rad , al_map_rgb(0,0,0));
-      al_draw_circle(mov.pos.x , mov.pos.y , rad , col , 3.0);
-      DrawArrow(mov.pos , mov.pos + mov.vel , al_map_rgb(0,0,255));
-   }
-///   inline void SetSpeed(double sx , double sy);
+   void Draw(ALLEGRO_COLOR col);
+   void DrawHollow(ALLEGRO_COLOR col);
+
+   inline void Stop() {mov.Stop();}
+   inline void Reverse() {mov.Reverse();}
+
    inline void SetSpeed(double sx , double sy) {
       mov.vel = Vec2(sx,sy);
    }
@@ -104,12 +104,9 @@ public :
       mov.acc = Vec2(ax,ay);
    }
    inline void Update(double dt) {
-      mov.pos += mov.vel*dt + mov.acc*dt*dt*(1.0/2.0);
-      mov.vel += mov.acc*dt;
+      mov.Update(dt);
    }
-   
-   inline void Stop() {mov.Stop();}
-   inline void Reverse() {mov.Reverse();}
+   inline MoveInfo FutureInfo(double dt) {return mov.FutureInfo(dt);}
 };
 
 

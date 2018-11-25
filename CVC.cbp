@@ -99,19 +99,32 @@
 		<Linker>
 			<Add directory="E:/LIBS/LIBS81Distro/Allegro524_mingw-w64-gcc81_posix_dwarf/lib" />
 		</Linker>
+		<Unit filename="P51Test.cpp" />
+		<Unit filename="P51TestCode.cpp" />
+		<Unit filename="P51TestCode.h" />
+		<Unit filename="PFiftyOneRevF.cpp" />
+		<Unit filename="PFiftyOneRevF.h" />
+		<Unit filename="QuadRootsRevJ.cpp" />
+		<Unit filename="QuadRootsRevJ.h" />
 		<Unit filename="src/Arrow.cpp" />
 		<Unit filename="src/Arrow.hpp" />
-		<Unit filename="src/Circle.cpp" />
-		<Unit filename="src/Circle.hpp" />
 		<Unit filename="src/CollTable.cpp" />
 		<Unit filename="src/CollTable.hpp" />
-		<Unit filename="src/GenLine2.cpp" />
-		<Unit filename="src/GenLine2.hpp" />
+		<Unit filename="src/Intercept.cpp" />
+		<Unit filename="src/Intercept.hpp" />
+		<Unit filename="src/Line2.cpp" />
+		<Unit filename="src/Line2.hpp" />
 		<Unit filename="src/LineSeg2.cpp" />
 		<Unit filename="src/LineSeg2.hpp" />
 		<Unit filename="src/Main.cpp" />
 		<Unit filename="src/Object.cpp" />
 		<Unit filename="src/Object.hpp" />
+		<Unit filename="src/Overlap.cpp" />
+		<Unit filename="src/Overlap.hpp" />
+		<Unit filename="src/Quartic.cpp" />
+		<Unit filename="src/Quartic.hpp" />
+		<Unit filename="src/Resolver.cpp" />
+		<Unit filename="src/Resolver.hpp" />
 		<Unit filename="src/Triangles.cpp" />
 		<Unit filename="src/Triangles.hpp" />
 		<Unit filename="src/Vector2.cpp" />
