@@ -110,6 +110,7 @@
 		<Unit filename="src/Arrow.hpp" />
 		<Unit filename="src/CollTable.cpp" />
 		<Unit filename="src/CollTable.hpp" />
+		<Unit filename="src/Globals.hpp" />
 		<Unit filename="src/Intercept.cpp" />
 		<Unit filename="src/Intercept.hpp" />
 		<Unit filename="src/Line2.cpp" />

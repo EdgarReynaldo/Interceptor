@@ -162,6 +162,8 @@ void CollTable::AddObject(CObject* cnew) {
    
    cset.insert(cnew);
    
+   cnew->ctable = this;
+   
    /// First, see if we have any dead circles, if so, we can replace them directly, and everything will still Just Work
    const unsigned int N = objects.size();
    for (unsigned int n = 0 ; n < N ; ++n) {
@@ -188,6 +190,7 @@ void CollTable::AddObject(CObject* cnew) {
 void CollTable::RemoveObject(CObject* cold) {
    if (cset.find(cold) == cset.end()) {return;}/// not on list
    if (!cold) {return;}
+   cold->ctable = 0;
    objects[GetIndex(cold)] = 0;
 }
 
@@ -201,7 +204,7 @@ void CollTable::RecalculateCollTable() {
       CollInfo& info = ctable[n];
       CObject* c1 = objects[info.objects.first];
       CObject* c2 = objects[info.objects.second];
-      if (c1 && c2 && info.dirty) {
+      if (info.dirty && c1 && c2) {
          info.dt = GetInterceptTime(*c1 , *c2);
       }
       info.dirty = false;
@@ -223,9 +226,11 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
       collisions = GetFirstCollisionsEarlierThanDT(dtrem);
       double tfirst = collisions.size()?collisions[0]->dt:dtrem;/// The first collision, or dt if none
       dtrem -= tfirst;
-
-      printf("%d collisions at time %1.8lf\n" , (int)collisions.size() , tfirst);
-      assert(tfirst != 0.0);
+      
+      if (collisions.size()) {
+         printf("%d collisions at time %1.8lf\n" , (int)collisions.size() , tfirst);
+      }
+///      assert(tfirst != 0.0);
       
       /// Advance time to first collision
       for (unsigned int ci = 0 ; ci < objects.size() ; ++ci) {
@@ -238,13 +243,14 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
          CollInfo* cinfo = &ctable[i];
          cinfo->dt -= tfirst;
       }
+/** Output collision table
       const unsigned int N2 = (unsigned int)(int)cset.size()*((int)cset.size()-1)/2;
       for (unsigned int i = 0 ; i < N2  ; ++i) {
          CollInfo* cinfo = &ctable[i];
          printf("#%u %2.4lf " , i , cinfo->dt);
       }
       printf("\n");
-
+*/
       /// Resolve collisions
       for (unsigned int cl = 0 ; cl < collisions.size() ; ++cl) {
          CollInfo* cinfo = collisions[cl];
@@ -257,8 +263,8 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
             CObject* c2 = objects[cinfo->objects.second];
             if (cresolver) {
                if (cresolver(c1 , c2)) {
-                  MarkDirty(GetIndex(c1));
-                  MarkDirty(GetIndex(c2));
+///                  MarkDirty(GetIndex(c1));
+///                  MarkDirty(GetIndex(c2));
                }
             }
          }
@@ -274,5 +280,13 @@ void CollTable::MarkDirty() {
    ctable_dirty = true;
    for (unsigned int i = 0 ; i < ctable.size() ; ++i) {
       ctable[i].dirty = true;
+   }
+}
+
+
+
+void CollTable::MarkDirty(CObject* c) {
+   if (c && cset.find(c) != cset.end()) {
+      MarkDirty(GetIndex(c));
    }
 }

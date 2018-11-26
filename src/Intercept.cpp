@@ -1,7 +1,10 @@
 
 
 
-
+#include "Globals.hpp"
+#include "allegro5/allegro.h"
+#include "allegro5/allegro_font.h"
+#include "Object.hpp"
 #include "Intercept.hpp"
 
 #include <cstdio>
@@ -12,13 +15,12 @@
 
 
 double GetInterceptTime(const CObject& c1 , const CObject& c2) {
-   MoveInfo rinfo = c2.mov - c1.mov;/// c1 acts as stationary
+   MoveInfo rinfo = c2.Mov() - c1.Mov();/// c1 acts as stationary
    const double rsq = (c1.rad+c2.rad)*(c1.rad+c2.rad);
    const double DSTSQ = rinfo.pos.MagnitudeSquared();
    if (DSTSQ <= rsq) {
-      /// Already overlapping, no collision
-      printf("overlap.");
-      return -1.0;
+      /// Already overlapping, no collision - sometimes things overlap just a tiny bit 
+///      return -1.0;
    }
    Vec2 towards = -rinfo.pos;
    towards.Normalize();
@@ -37,15 +39,15 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
    Vec2 accn = towards*dpa;
 ///   const double DST = sqrt(DSTSQ - rsq);
    
-   DrawArrow(c2.mov.pos , c2.mov.pos + veln , al_map_rgb(255,0,0));
-   DrawArrow(c2.mov.pos , c2.mov.pos + accn , al_map_rgb(255,0,255));
+///   DrawArrow(c2.mov.pos , c2.mov.pos + veln , al_map_rgb(255,0,0));
+///   DrawArrow(c2.mov.pos , c2.mov.pos + accn , al_map_rgb(255,0,255));
    
-   const double VEL = veln.Magnitude();/// Magnitude of velocity in direction of towards
-   const double ACC = accn.Magnitude();/// Magnitude of acceleration in direction of towards
+///   const double VEL = veln.Magnitude();/// Magnitude of velocity in direction of towards
+///   const double ACC = accn.Magnitude();/// Magnitude of acceleration in direction of towards
 
-   if (ACC == 0.0) {
+   if (dpa == 0.0) {
       /// No relative normal acceleration
-      if (VEL <= 0.0) {
+      if (dpv <= 0.0) {
          return -1.0;/// Moving away
       }
       
@@ -69,9 +71,9 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
       }
       return -1.0;
       
-   } else if (ACC < 0.0) {
+   } else if (dpa < 0.0) {
       /// Accelerating away
-      if (VEL <= 0.0) {
+      if (dpv <= 0.0) {
          return -1.0;/// Moving away
       }
       else {
@@ -114,15 +116,30 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
    /// Find values for a,b,c,d, and e for which ax^4 + bx^3 + cx^2 + dx + e = 0
    
    /// We need to normalize the equation so that a is 1 - to do this divide b,c,d, and e by a
-   const long double ACCSQ = rinfo.acc.MagnitudeSquared();
+   const long double ACCSQ = rinfo.acc.MagnitudeSquared()/4.0;
    assert(ACCSQ > 0.0);/// precondition
    const long double a = 1.0L;/// ACCSQ divided by itself is 1
    const long double b = DotProduct(rinfo.vel , rinfo.acc) / ACCSQ;
-   const long double c = (rinfo.vel.MagnitudeSquared() + DotProduct(rinfo.pos , rinfo.acc))/ACCSQ;
-   const long double d = DotProduct(rinfo.pos , rinfo.vel)/ACCSQ;
-   const long double e = (DSTSQ - rsq)/ACCSQ;
+   const long double c = (rinfo.vel.MagnitudeSquared() + DotProduct(rinfo.pos , rinfo.acc))/ACCSQ;/// 100,0 * 10.0 / 100 = 10
+   const long double d = 2.0*DotProduct(rinfo.pos , rinfo.vel)/ACCSQ;
+   const long double e = (DSTSQ - rsq)/ACCSQ;/// 10000 - (10 + 10)^2 / 100 = 96
+   
+///   printf("ABCDE = {%lf , %lf , %lf , %lf , %lf}\n" , (double)a , (double)b , (double)c , (double)d , (double)e);
    
    QuarticSolution qs = SolveQuartic(a,b,c,d,e);
+   
+/*   
+   for (unsigned int i = 0 ; i < qs.nroots ; ++i) {
+      CObject future = c2;
+      if (qs.ipart[i] == 0.0L) {
+         double dt = (double)qs.rpart[i];
+         future.mov = c2.FutureInfo(dt);
+         future.DrawHollow(al_map_rgb(255,255,0));
+         al_draw_textf(f , al_map_rgb(255,255,255) , future.mov.pos.x , future.mov.pos.y , ALLEGRO_ALIGN_CENTER , "%1.4lf" , dt);
+      }
+   }
+*/   
+   
    
    return qs.GetRealIntercept();
    
@@ -147,7 +164,7 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
 
 
 double GetInterceptTimeOld(const CObject& c1 , const CObject& c2) {
-   MoveInfo rinfo = c2.mov - c1.mov;/// c1 acts as stationary
+   MoveInfo rinfo = c2.Mov() - c1.Mov();/// c1 acts as stationary
    const double rsq = (c1.rad+c2.rad)*(c1.rad+c2.rad);
    const double DSTSQ = rinfo.pos.MagnitudeSquared();
    if (DSTSQ <= rsq) {

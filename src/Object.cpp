@@ -5,7 +5,7 @@
 #include "Object.hpp"
 
 
-MoveInfo MoveInfo::FutureInfo(double dt) {
+MoveInfo MoveInfo::FutureInfo(double dt) const {
    MoveInfo f = *this;
    f.Update(dt);
    return f;

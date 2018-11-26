@@ -3,6 +3,7 @@
 #include "P51TestCode.h"
 #include "QuadRootsRevJ.h"
 
+#include "src/Quartic.hpp"
 #include "src/Intercept.hpp"
 #include "src/Object.hpp"
 
@@ -12,13 +13,16 @@
 #include "allegro5/allegro_primitives.h"
 
 #include <cstdio>
+#include "src/Globals.hpp"
 
 
 const int sw = 1024;
 const int sh = 768;
 const double DT = 1.0/60.0;
 
-int main(int argc , char** argv) {
+ALLEGRO_FONT* f = 0;
+
+int main2(int argc , char** argv) {
    
    (void)argc;
    (void)argv;
@@ -37,7 +41,7 @@ int main(int argc , char** argv) {
    
    ALLEGRO_TIMER* t = al_create_timer(1.0/60.0);
    
-   ALLEGRO_FONT* f = al_load_ttf_font("Verdana.ttf" , -36 , 0);
+   f = al_load_ttf_font("Verdana.ttf" , -36 , 0);
    
    ALLEGRO_BITMAP* buf = al_create_bitmap(sw,sh);
    
@@ -52,7 +56,16 @@ int main(int argc , char** argv) {
    al_register_event_source(q , al_get_mouse_event_source());
    
    
+   /// (x-2)(x+2)(x-1)(x+1) = (x^2 - 4)(x^2 - 1) = x^4 - 5x^2 + 4 = 0
+   QuarticSolution qs = SolveQuartic(1.0L , 0.0L , -5.0L , 0.0L , 4.0L);
+   QuarticSolution qs2 = SolveQuartic(1.0L , 0.0L , 10.0L , 0.0L , 96.0L);
+   QuarticSolution qs3 = SolveQuartic(1.0L , 0.0L , -10.0L , 0.0L , 96.0L);
    
+   QuarticSolution qs4 = SolveQuartic(25.0L , 0.0L , -700.0L , 0.0L , 4500.0L);
+   QuarticSolution qs5 = SolveQuartic(1.0L , 0.0L , -28.0L , 0.0L , 180.0L);
+   
+   
+//   return 0;
    
    
    
@@ -83,6 +96,15 @@ int main(int argc , char** argv) {
          
          o1.Draw(al_map_rgb(255,0,0));
          o2.Draw(al_map_rgb(255,255,0));
+         
+         const double ddt = 0.25;
+         double dt1;
+         for (dt1 = -5.0 ; dt1 < 5.0 ; dt1 += ddt) {
+            double dt2 = dt1 + ddt;
+            MoveInfo i1 = o2.FutureInfo(dt1);
+            MoveInfo i2 = o2.FutureInfo(dt2);
+            DrawArrow(i1.pos , i2.pos , al_map_rgb(0,255,255));
+         }
 
          double t = GetInterceptTime(o1 , o2);
          
@@ -108,8 +130,8 @@ int main(int argc , char** argv) {
             redraw = true;
          }
          if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_S) {
-            o2.mov.vel.Set(0,0);
-            o2.mov.acc.Set(0,0);
+            o2.SetSpeed(0,0);
+            o2.SetAccel(0,0);
             redraw = true;
          }
          if (ev.type == ALLEGRO_EVENT_TIMER) {
@@ -126,24 +148,27 @@ int main(int argc , char** argv) {
 //            msx = ev.mouse.x - sw/2.0;
 //            msy = ev.mouse.y - sh/2.0;
             if (lmb) {
-               o2.mov.pos.Set(msx,msy);
+               o2.SetPos(msx,msy);
             }
             else if (rmb) {
-               o2.mov.vel.Set(msx - o2.mov.pos.x , msy - o2.mov.pos.y);
+               o2.SetSpeed(msx - o2.Pos().x , msy - o2.Pos().y);
             }
             else if (mmb) {
-               o2.mov.acc.Set(msx - o2.mov.pos.x , msy - o2.mov.pos.y);
+               o2.SetAccel(msx - o2.Pos().x , msy - o2.Pos().y);
             }
             /// msx,msy holds the vector from the center of the sceen to the mouse pointer
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
             if (ev.mouse.button == 1) {
                lmb = true;
+               o2.SetPos(msx,msy);
             }
             else if (ev.mouse.button == 2) {
+               o2.SetSpeed(msx - o2.Pos().x , msy - o2.Pos().y);
                rmb = true;
             }
             else if (ev.mouse.button == 3) {
+               o2.SetAccel(msx - o2.Pos().x , msy - o2.Pos().y);
                mmb = true;
             }
          }

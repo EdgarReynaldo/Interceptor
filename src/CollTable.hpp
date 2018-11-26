@@ -11,7 +11,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Object.hpp"
+///#include "Object.hpp"
+
+
+class CObject;
 
 
 
@@ -70,6 +73,7 @@ public :
    int UpdateCollisionTableAndResolve(double dt);
 
    void MarkDirty();
+   void MarkDirty(CObject* c);
    
 };
 

@@ -10,14 +10,14 @@
 #include <cstdio>
 
 
-const long double EPSILON2 = 0.000000001L;
+const long double EPSILON2 = 0.0001L;
 
 double QuarticSolution::GetRealIntercept() {
    std::vector<double> times;
    for (unsigned int i = 0 ; i < nroots ; ++i) {
-      if (fabs(ipart[i]) < EPSILON2 && rpart[i] >= 0.0L) {
+      if ((ipart[i] == 0.0L) && rpart[i] >= 0.0L) {
          times.push_back((double)rpart[i]);
-         printf("Collision time detected in quartic solution : %2.8lf\n" , (double)rpart[i]);
+///         printf("Collision time detected in quartic solution : %2.8lf\n" , (double)rpart[i]);
       }
    }
    std::sort(times.begin() , times.end());
@@ -30,6 +30,11 @@ QuarticSolution SolveQuartic(long double coeff[5]) {
    QuarticSolution s;
 /// int QuadCubicRoots(long double *Coeff, int N, long double *RealRoot, long double *ImagRoot);
    s.nroots = QuadCubicRoots(coeff , 4 , s.rpart , s.ipart);
+///   printf("%u roots returned by QuadCubicRoots\n" , s.nroots);
+   for (unsigned int i = 0 ; i < s.nroots ; ++i) {
+///      printf("[%lf , %lf*i] " , (double)s.rpart[i] , (double)s.ipart[i]);
+   }
+///   printf("\n");
    return s;
 }
 

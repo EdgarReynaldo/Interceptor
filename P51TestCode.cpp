@@ -1,13 +1,9 @@
 //---------------------------------------------------------------------------
 
-#pragma hdrstop
-
 #include "P51TestCode.h"
 #include <cmath>
 #include <new>   // Defines new(std::nothrow)
 #include <cstdio>   // This defines the ShowMessage() function
-
-#pragma package(smart_init)
 
 //---------------------------------------------------------------------------
 
