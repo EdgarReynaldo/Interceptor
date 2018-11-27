@@ -215,20 +215,29 @@ void CollTable::RecalculateCollTable() {
 
 
 int CollTable::UpdateCollisionTableAndResolve(double dt) {
-   int overlapcount = 0;
+   int collcount = 0;
    if (dt <= 0.0) {return 0;}/// Can't currently rewind time, sorry
    
    std::vector<CollInfo*> collisions;
    double dtrem = dt;
    do {
-      overlapcount = 0;
       RecalculateCollTable();
       collisions = GetFirstCollisionsEarlierThanDT(dtrem);
+      collcount += collisions.size();
+      
       double tfirst = collisions.size()?collisions[0]->dt:dtrem;/// The first collision, or dt if none
       dtrem -= tfirst;
       
       if (collisions.size()) {
-         printf("%d collisions at time %1.8lf\n" , (int)collisions.size() , tfirst);
+         printf("%d collisions at time %le betweem " , (int)collisions.size() , tfirst);
+         for (unsigned int i = 0 ; i < collisions.size() ; ++i) {
+            INDEXPAIR ip = collisions[i]->objects;
+            printf("(%u,%u) " , ip.first , ip.second);
+         }
+         printf("\n");
+      }
+      if (collcount > 100) {
+         printf("Too many collisions to handle.\n");
       }
 ///      assert(tfirst != 0.0);
       
@@ -271,7 +280,7 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
       }
       dt = dtrem;
    } while (dt > 0.0);/// && collisions.size());
-   return overlapcount;
+   return collcount;
 }
 
 

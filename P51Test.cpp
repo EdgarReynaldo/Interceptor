@@ -108,6 +108,13 @@ int main2(int argc , char** argv) {
 
          double t = GetInterceptTime(o1 , o2);
          
+         if (t >= 0.0) {
+            CObject c = o2;
+            c.Update(t);
+            c.DrawHollow(al_map_rgb(255,255,0));
+            al_draw_textf(f , al_map_rgb(255,255,255) , c.Mov().pos.x , c.Mov().pos.y , ALLEGRO_ALIGN_CENTRE , "%1.4lf" , t);
+         }
+         
          al_draw_textf(f , al_map_rgb(255,255,255) , sw/2.0 , 10.0 , ALLEGRO_ALIGN_CENTER , "DT = %6.3lf" , t);
          
          al_set_target_backbuffer(d);

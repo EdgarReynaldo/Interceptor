@@ -58,7 +58,7 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
       const double c = (DSTSQ - rsq)/VSQ;
       const double discrim = b*b - 4.0*c;/// a is 1
       if (discrim < 0.0) {
-         printf("No real roots.");
+//         printf("No real roots.");
          return -1.0;
       }
       const double sqrtd = sqrt(discrim);

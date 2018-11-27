@@ -150,7 +150,7 @@ int main(int argc , char** argv) {
             CObject* c = &circvec[i];
             if (c->active) {
                c->Draw(al_map_rgb(0,255,0));
-               al_draw_textf(f , al_map_rgb(0,255,0) , c->Pos().x , c->Pos().y - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
+               al_draw_textf(f , al_map_rgb(255,255,255) , c->Pos().x , c->Pos().y - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
             }
             for (unsigned int j = 0 ; j < NC ; ++j) {
                if (i == j) {continue;}
