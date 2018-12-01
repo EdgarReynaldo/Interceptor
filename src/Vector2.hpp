@@ -21,7 +21,7 @@ public :
    Vec2& operator*=(double f);
    Vec2& operator+=(const Vec2& v);
    
-   inline Vec2 operator-() {return Vec2(-x,-y);}
+   inline Vec2 operator-() const {return Vec2(-x,-y);}
    
 ///   double Magnitude();
    inline double MagnitudeSquared() {

@@ -271,10 +271,7 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
             CObject* c1 = objects[cinfo->objects.first];
             CObject* c2 = objects[cinfo->objects.second];
             if (cresolver) {
-               if (cresolver(c1 , c2)) {
-///                  MarkDirty(GetIndex(c1));
-///                  MarkDirty(GetIndex(c2));
-               }
+               cresolver(c1 , c2);
             }
          }
       }

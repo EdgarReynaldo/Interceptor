@@ -134,6 +134,8 @@ public :
    inline Vec2 Accel() const {return mov.acc;}
    
    inline MoveInfo Mov() const {return mov;}
+   inline PhysicsInfo Phys() const {return phys;}
+   
    
    friend bool Overlaps(const CObject& c1 , const CObject& c2);
    friend bool MakeObjectsBounce(CObject* c1 , CObject* c2);
