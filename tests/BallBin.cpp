@@ -11,16 +11,7 @@
 #include "allegro5/allegro_font.h"
 #include "allegro5/allegro_ttf.h"
 
-#include "Globals.hpp"
-#include "Object.hpp"
-#include "CollTable.hpp"
-#include "Vector2.hpp"
-#include "Arrow.hpp"
-#include "Triangles.hpp"
-#include "Overlap.hpp"
-#include "Intercept.hpp"
-
-
+#include "Merlin.hpp"
 
 const int sw = 1024;
 const int sh = 768;

@@ -1,11 +1,8 @@
 
 
-#include "P51TestCode.h"
-#include "QuadRootsRevJ.h"
+#include "Merlin/QuadRootsRevJ.h"
 
-#include "src/Quartic.hpp"
-#include "src/Intercept.hpp"
-#include "src/Object.hpp"
+#include "Merlin.hpp"
 
 #include "allegro5/allegro.h"
 #include "allegro5/allegro_font.h"
@@ -13,16 +10,15 @@
 #include "allegro5/allegro_primitives.h"
 
 #include <cstdio>
-#include "src/Globals.hpp"
 
 
 const int sw = 1024;
 const int sh = 768;
 const double DT = 1.0/60.0;
 
-ALLEGRO_FONT* f = 0;
+///ALLEGRO_FONT* f = 0;
 
-int main2(int argc , char** argv) {
+int main(int argc , char** argv) {
    
    (void)argc;
    (void)argv;
