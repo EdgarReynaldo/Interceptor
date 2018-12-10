@@ -164,7 +164,7 @@ void MakeObjectsConserve(CObject* c1 , CObject* c2) {
    }
    
    const double distance = (c2->Pos() - c1->Pos()).Magnitude();
-   const double rad = sqrt((c1->rad + c2->rad)*(c1->rad + c2->rad));
+   const double rad = c1->rad + c2->rad;
    if (distance < rad) {
       printf("Correcting overlap.");
       double extra = 1.1*(rad - distance);

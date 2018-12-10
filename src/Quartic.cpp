@@ -1,7 +1,7 @@
 
 
 
-#include "../QuadRootsRevJ.h"
+#include "QuadRootsRevJ.h"
 
 #include "Quartic.hpp"
 

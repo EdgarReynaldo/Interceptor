@@ -37,8 +37,9 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
    const double dpv = DotProduct(vel , towards);
    const double dpa = DotProduct(acc , towards);
 
-   Vec2 veln = towards*dpv;
-   Vec2 accn = towards*dpa;
+///   Vec2 veln = towards*dpv;
+///   Vec2 accn = towards*dpa;
+
 ///   const double DST = sqrt(DSTSQ - rsq);
    
 ///   DrawArrow(c2.mov.pos , c2.mov.pos + veln , al_map_rgb(255,0,0));
