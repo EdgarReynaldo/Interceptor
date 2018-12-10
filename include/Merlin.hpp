@@ -9,7 +9,7 @@
 #include "Merlin/CollTable.hpp"
 #include "Merlin/Arrow.hpp"
 #include "Merlin/Globals.hpp"
-
+#include "Merlin/Intercept.hpp"
 
 
 
