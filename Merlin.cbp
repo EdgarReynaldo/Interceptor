@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="CVC" />
+		<Option title="Merlin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -64,12 +64,14 @@
 		<Unit filename="src/Arrow.cpp" />
 		<Unit filename="src/CollHistory.cpp" />
 		<Unit filename="src/CollTable.cpp" />
+		<Unit filename="src/Globals.cpp" />
 		<Unit filename="src/Intercept.cpp" />
 		<Unit filename="src/Line2.cpp" />
 		<Unit filename="src/LineSeg2.cpp" />
 		<Unit filename="src/Object.cpp" />
 		<Unit filename="src/Overlap.cpp" />
 		<Unit filename="src/Points.cpp" />
+		<Unit filename="src/QuadRootsRevJ.cpp" />
 		<Unit filename="src/Quartic.cpp" />
 		<Unit filename="src/Resolver.cpp" />
 		<Unit filename="src/Triangles.cpp" />
