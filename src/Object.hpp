@@ -57,8 +57,10 @@ public :
 };
    
 
-
 class CObject {
+private :
+   unsigned int id;
+   static unsigned int NextId();
 protected :
    MoveInfo mov;
 //   RotateInfo rot;
@@ -74,6 +76,7 @@ public :
    
 ///   CObject();
    CObject() :
+         id(NextId()),
          mov(),
          phys(),
          rad(0.0),
@@ -83,6 +86,7 @@ public :
    {}
 //   CObject(Vec2 pos , double radius);
    CObject(double xpos , double ypos , double radius) :
+         id(NextId()),
          mov(Vec2(xpos,ypos) , Vec2() , Vec2()),
          phys(),
          rad(fabs(radius)),
@@ -106,6 +110,12 @@ public :
    inline void Stop() {mov.Stop();}
    inline void Reverse() {mov.Reverse();}
 
+   inline void SetPos(const Vec2& p) {
+      mov.pos = p;
+      if (ctable) {
+         ctable->MarkDirty(this);
+      }
+   }
    inline void SetPos(double px , double py) {
       mov.pos = Vec2(px,py);
       if (ctable) {
@@ -124,6 +134,7 @@ public :
          ctable->MarkDirty(this);
       }
    }
+   inline void SetMove(MoveInfo info) {mov = info;}
    inline void Update(double dt) {
       mov.Update(dt);
    }
@@ -136,6 +147,7 @@ public :
    inline MoveInfo Mov() const {return mov;}
    inline PhysicsInfo Phys() const {return phys;}
    
+   inline unsigned int Id() {return id;}
    
    friend bool Overlaps(const CObject& c1 , const CObject& c2);
    friend bool MakeObjectsBounce(CObject* c1 , CObject* c2);

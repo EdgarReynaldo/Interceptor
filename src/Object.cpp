@@ -5,6 +5,13 @@
 #include "Object.hpp"
 
 
+unsigned int CObject::NextId() {
+   static unsigned int i = 0;
+   return i++;
+}
+
+
+
 MoveInfo MoveInfo::FutureInfo(double dt) const {
    MoveInfo f = *this;
    f.Update(dt);

@@ -17,9 +17,11 @@
 double GetInterceptTime(const CObject& c1 , const CObject& c2) {
    MoveInfo rinfo = c2.Mov() - c1.Mov();/// c1 acts as stationary
    const double rsq = (c1.rad+c2.rad)*(c1.rad+c2.rad);
+   const double rsq2 = (1.0 + c1.rad + c2.rad)*(1.0 + c1.rad + c2.rad);
    const double DSTSQ = rinfo.pos.MagnitudeSquared();
-   if (DSTSQ <= rsq) {
+   const bool overlap = (DSTSQ <= rsq);
       /// Already overlapping, no collision - sometimes things overlap just a tiny bit 
+   if (overlap) {
 ///      return -1.0;
    }
    Vec2 towards = -rinfo.pos;
@@ -122,26 +124,43 @@ double GetInterceptTime(const CObject& c1 , const CObject& c2) {
    const long double b = DotProduct(rinfo.vel , rinfo.acc) / ACCSQ;
    const long double c = (rinfo.vel.MagnitudeSquared() + DotProduct(rinfo.pos , rinfo.acc))/ACCSQ;/// 100,0 * 10.0 / 100 = 10
    const long double d = 2.0*DotProduct(rinfo.pos , rinfo.vel)/ACCSQ;
-   const long double e = (DSTSQ - rsq)/ACCSQ;/// 10000 - (10 + 10)^2 / 100 = 96
+   const long double e = (DSTSQ - rsq2)/ACCSQ;/// 10000 - (10 + 10)^2 / 100 = 96
    
 ///   printf("ABCDE = {%lf , %lf , %lf , %lf , %lf}\n" , (double)a , (double)b , (double)c , (double)d , (double)e);
    
    QuarticSolution qs = SolveQuartic(a,b,c,d,e);
    
-/*   
+//*   
    for (unsigned int i = 0 ; i < qs.nroots ; ++i) {
       CObject future = c2;
       if (qs.ipart[i] == 0.0L) {
          double dt = (double)qs.rpart[i];
-         future.mov = c2.FutureInfo(dt);
+         future.SetMove(c2.FutureInfo(dt));
          future.DrawHollow(al_map_rgb(255,255,0));
-         al_draw_textf(f , al_map_rgb(255,255,255) , future.mov.pos.x , future.mov.pos.y , ALLEGRO_ALIGN_CENTER , "%1.4lf" , dt);
+         al_draw_textf(f , al_map_rgb(255,255,255) , future.Mov().pos.x , future.Mov().pos.y , ALLEGRO_ALIGN_CENTER , "%1.4lf" , dt);
       }
    }
-*/   
+//*/   
+
+   std::vector<double> times = qs.GetRealIntercepts();
+
+   if (times.size() == 1 || times.size() == 3) {
+      return times[0];
+   }
+   else if (times.size() == 2) {
+      if (overlap) {return -1.0;}
+      return times[0];
+   }
+   else if (times.size() == 4) {
+      int i = 0;
+      while (times[i] < 0.0 && i < 4) {++i;}
+      if (i == 2) {return times[2];}
+      if (i == 1) {return times[2];}
+      if (i == 0) {return times[0];}
+   }
+   return -1;
    
    
-   return qs.GetRealIntercept();
    
 /**   
    /// Quadratic equation [ACC*t^2)/2 + VEL*t - DST = 0

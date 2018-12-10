@@ -245,6 +245,15 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
       for (unsigned int ci = 0 ; ci < objects.size() ; ++ci) {
          CObject* c = objects[ci];
          if (c && c->active) {
+            CObject co = *c;
+            co.Update(tfirst);
+            for (unsigned int ci2 = 4 ; ci2 < objects.size() ; ++ci2) {
+               if (ci == ci2) {continue;}
+               if (objects[ci2] && Overlaps(co , *objects[ci2])) {
+///                  printf("Overlap");
+///                  int i = 1/0;
+               }
+            }
             c->Update(tfirst);
          }
       }
@@ -267,11 +276,12 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
             printf("Houston we have a problem.\n");
          }
          if (cinfo->dt == 0.0) {
-//            printf("collision\n");
             CObject* c1 = objects[cinfo->objects.first];
             CObject* c2 = objects[cinfo->objects.second];
+//            chistory.PushInitialState(*c1 , *c2);
             if (cresolver) {
                cresolver(c1 , c2);
+//               chistory.PushResult(*c1 , *c2);
             }
          }
       }

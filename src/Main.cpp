@@ -116,6 +116,10 @@ int main(int argc , char** argv) {
    
    al_start_timer(t);
    
+   CollTable oldctable;
+   
+   bool overlap = false;
+   
    while (!quit) {
       if (redraw) {
          al_set_target_bitmap(buf);
@@ -146,6 +150,7 @@ int main(int argc , char** argv) {
  ///        DrawArrow(c , p1 , al_map_rgb(255,255,255));
  ///        DrawArrow(c , p2 , al_map_rgb(0,255,0));
  ///        DrawArrow(c , c + ScalarProjection(p1-c,p2-c) , al_map_rgb(255,0,0));
+         overlap = false;
          for (unsigned int i = 4 ; i < NC ; ++i) {
             CObject* c = &circvec[i];
             if (c->active) {
@@ -156,13 +161,13 @@ int main(int argc , char** argv) {
                if (i == j) {continue;}
                CObject* c2 = &circvec[j];
                if (c && c2 && Overlaps(*c , *c2)) {
+                  overlap = true;
                   c->Draw(al_map_rgb(255,0,0));
                   c2->Draw(al_map_rgb(255,0,0));
                   al_draw_textf(f , al_map_rgb(0,0,255) , c->Pos().x , c->Pos().y - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTRE , "%u" , i);
                }
             }
          }
-         ctable.UpdateCollisionTableAndResolve(DT);
 //*/
          
 ///         tri1.Draw(al_map_rgb(0 , 0 , 0) , al_map_rgb(255,255,255) , 3.0);
@@ -173,7 +178,7 @@ int main(int argc , char** argv) {
          
 ///         al_draw_textf(f , al_map_rgb(255,255,255) , sw/2 , sh/2 - al_get_font_line_height(f)/2 , ALLEGRO_ALIGN_CENTER , "%s" , text);
          
-///         al_draw_textf(f , al_map_rgb(0,255,255) , sw/2 , 10 , ALLEGRO_ALIGN_CENTER , "Escape count %d" , ec);
+         al_draw_textf(f , al_map_rgb(0,255,255) , sw/2 , 10 , ALLEGRO_ALIGN_CENTER , "Escape count %d" , ec);
 
          al_set_target_backbuffer(d);
          al_draw_bitmap(buf , 0 , 0 , 0);
@@ -198,6 +203,11 @@ int main(int argc , char** argv) {
             redraw = true;
             ++ticks;
             if (ticks == 1) {
+               oldctable = ctable;
+               if (overlap) {
+///                  int i = 1/0;
+               }
+               ctable.UpdateCollisionTableAndResolve(DT);
             }
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {

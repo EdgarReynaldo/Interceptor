@@ -108,6 +108,8 @@
 		<Unit filename="QuadRootsRevJ.h" />
 		<Unit filename="src/Arrow.cpp" />
 		<Unit filename="src/Arrow.hpp" />
+		<Unit filename="src/CollHistory.cpp" />
+		<Unit filename="src/CollHistory.hpp" />
 		<Unit filename="src/CollTable.cpp" />
 		<Unit filename="src/CollTable.hpp" />
 		<Unit filename="src/Globals.hpp" />

@@ -55,7 +55,7 @@ int main2(int argc , char** argv) {
    al_register_event_source(q , al_get_keyboard_event_source());
    al_register_event_source(q , al_get_mouse_event_source());
    
-   
+/**   
    /// (x-2)(x+2)(x-1)(x+1) = (x^2 - 4)(x^2 - 1) = x^4 - 5x^2 + 4 = 0
    QuarticSolution qs = SolveQuartic(1.0L , 0.0L , -5.0L , 0.0L , 4.0L);
    QuarticSolution qs2 = SolveQuartic(1.0L , 0.0L , 10.0L , 0.0L , 96.0L);
@@ -63,7 +63,7 @@ int main2(int argc , char** argv) {
    
    QuarticSolution qs4 = SolveQuartic(25.0L , 0.0L , -700.0L , 0.0L , 4500.0L);
    QuarticSolution qs5 = SolveQuartic(1.0L , 0.0L , -28.0L , 0.0L , 180.0L);
-   
+//*/   
    
 //   return 0;
    
@@ -108,7 +108,7 @@ int main2(int argc , char** argv) {
 
          double t = GetInterceptTime(o1 , o2);
          
-         if (t >= 0.0) {
+         if (t != -1.0) {
             CObject c = o2;
             c.Update(t);
             c.DrawHollow(al_map_rgb(255,255,0));

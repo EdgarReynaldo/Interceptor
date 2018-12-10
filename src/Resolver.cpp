@@ -118,6 +118,9 @@ void MakeObjectsConserve(CObject* c1 , CObject* c2) {
    const Vec2 N1 = (c2->Mov().pos - c1->Mov().pos).Normalize();
    const Vec2 N2 = -N1;
    
+   /// c1->Pos() + (r1 + 0.5)*N1 = c2->Pos + (r2 + 0.5)N2
+   /// N1*(r1 + r2 + 1.0) = c2->Pos - c1->Pos
+   
    const double m1 = c1->Phys().mass;
    const double m2 = c2->Phys().mass;
    const double mtotal = m1 + m2;
@@ -127,9 +130,6 @@ void MakeObjectsConserve(CObject* c1 , CObject* c2) {
    const Vec2 V1 = c1->Mov().vel;
    const Vec2 V2 = c2->Mov().vel;
 
-   const Vec2 I1 = V1*m1;
-   const Vec2 I2 = V2*m2;
-  
    /// The angle between V and N determines how much energy is transferred
    const double dp1n = DotProduct(V1 , N1);
    const double dp2n = DotProduct(V2 , N2);
@@ -141,10 +141,8 @@ void MakeObjectsConserve(CObject* c1 , CObject* c2) {
    const Vec2 V1N = N1*dp1n;
    const Vec2 V2N = N2*dp2n;
 
-/**
-v1b = (v1*(m1-m2) + 2m2v2)/(m1 + m2)
-v2b = (v2(m2-m1) + 2m1v1)/(m1 + m2)
-*/
+/**   v1b = (v1*(m1-m2) + 2m2v2)/(m1 + m2)
+      v2b = (v2*(m2-m1) + 2m1v1)/(m1 + m2)    */
    
    const Vec2 V1NB = (V1N*(m1-m2) + V2N*2.0*m2)*(1.0/(mtotal))*ELASTICITY;
    const Vec2 V2NB = (V2N*(m2-m1) + V1N*2.0*m1)*(1.0/(mtotal))*ELASTICITY;
@@ -164,6 +162,25 @@ v2b = (v2(m2-m1) + 2m1v1)/(m1 + m2)
    if (!c2->fixed) {
       c2->SetSpeed(NewV2.x , NewV2.y);
    }
+   
+   const double distance = (c2->Pos() - c1->Pos()).Magnitude();
+   const double rad = sqrt((c1->rad + c2->rad)*(c1->rad + c2->rad));
+   if (distance < rad) {
+      printf("Correcting overlap.");
+      double extra = 1.1*(rad - distance);
+      if (!c1->fixed && !c2->fixed) {
+         c1->SetPos(c1->Pos() + N2*extra*0.5);
+         c2->SetPos(c2->Pos() + N1*extra*0.5);
+      }
+      else if (!c1->fixed) {
+         c1->SetPos(c1->Pos() + N2*extra);
+      }
+      else if (!c2->fixed) {
+         c2->SetPos(c2->Pos() + N1*extra);
+      }
+   }
+   
+   
 /**
    if (DotProduct(I1,N1) > 0.0) {
       /// Circle one is moving towards circle two

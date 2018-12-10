@@ -12,16 +12,17 @@
 
 const long double EPSILON2 = 0.0001L;
 
-double QuarticSolution::GetRealIntercept() {
+std::vector<double> QuarticSolution::GetRealIntercepts() {
    std::vector<double> times;
    for (unsigned int i = 0 ; i < nroots ; ++i) {
-      if ((ipart[i] == 0.0L) && rpart[i] >= 0.0L) {
+      if (ipart[i] == 0.0L) {
          times.push_back((double)rpart[i]);
 ///         printf("Collision time detected in quartic solution : %2.8lf\n" , (double)rpart[i]);
       }
    }
    std::sort(times.begin() , times.end());
-   return times.size()?times[0]:-1.0;
+///   return times.size()?times[0]:-1.0;
+   return times;///.size()?times[0]:-1.0;
 }
 
 

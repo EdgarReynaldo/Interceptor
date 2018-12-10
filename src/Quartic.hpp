@@ -18,7 +18,7 @@ struct QuarticSolution {
    
    QuarticSolution() : rpart() , ipart() , nroots(0) {}
    
-   double GetRealIntercept();
+   std::vector<double> GetRealIntercepts();
 };
 
 QuarticSolution SolveQuartic(long double coeff[5]);
