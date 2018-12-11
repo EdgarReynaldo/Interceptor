@@ -250,8 +250,8 @@ int CollTable::UpdateCollisionTableAndResolve(double dt) {
             for (unsigned int ci2 = 4 ; ci2 < objects.size() ; ++ci2) {
                if (ci == ci2) {continue;}
                if (objects[ci2] && Overlaps(co , *objects[ci2])) {
-///                  printf("Overlap");
-///                  int i = 1/0;
+                  printf("Overlap");
+                  int i = 1/0;
                }
             }
             c->Update(tfirst);

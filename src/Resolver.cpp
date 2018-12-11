@@ -167,10 +167,10 @@ void MakeObjectsConserve(CObject* c1 , CObject* c2) {
    const double rad = c1->rad + c2->rad;
    if (distance < rad) {
       printf("Correcting overlap.");
-      double extra = 1.1*(rad - distance);
+      double extra = 1.0 + rad - distance;
       if (!c1->fixed && !c2->fixed) {
-         c1->SetPos(c1->Pos() + N2*extra*0.5);
-         c2->SetPos(c2->Pos() + N1*extra*0.5);
+//         c1->SetPos(c1->Pos() + N2*extra*0.5);
+//         c2->SetPos(c2->Pos() + N1*extra*0.5);
       }
       else if (!c1->fixed) {
          c1->SetPos(c1->Pos() + N2*extra);

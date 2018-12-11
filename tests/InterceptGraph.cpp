@@ -51,21 +51,43 @@ int main(int argc , char** argv) {
    al_register_event_source(q , al_get_keyboard_event_source());
    al_register_event_source(q , al_get_mouse_event_source());
    
-/**   
-   /// (x-2)(x+2)(x-1)(x+1) = (x^2 - 4)(x^2 - 1) = x^4 - 5x^2 + 4 = 0
-   QuarticSolution qs = SolveQuartic(1.0L , 0.0L , -5.0L , 0.0L , 4.0L);
-   QuarticSolution qs2 = SolveQuartic(1.0L , 0.0L , 10.0L , 0.0L , 96.0L);
-   QuarticSolution qs3 = SolveQuartic(1.0L , 0.0L , -10.0L , 0.0L , 96.0L);
+
+   unsigned int NCMAX = 2000;/// This takes 1000*1999 collision pairs at max capacity
+   unsigned int NC = 5;
    
-   QuarticSolution qs4 = SolveQuartic(25.0L , 0.0L , -700.0L , 0.0L , 4500.0L);
-   QuarticSolution qs5 = SolveQuartic(1.0L , 0.0L , -28.0L , 0.0L , 180.0L);
-//*/   
+   std::vector<CObject> circvec(NCMAX + 1 , CObject());
+
+   double rad1 = sqrt(sw*sw*9.0/4.0 + sh*sh/4.0);
+   double rad2 = sqrt(sw*sw/4.0 + sh*sh*9.0/4.0); 
+   /// Circular boundaries
+   circvec[0] = CObject(-3.0*sw/2.0 , sh/2.0 , rad1);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
+   circvec[1] = CObject(5.0*sw/2.0 , sh/2.0 , rad1);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
+   circvec[2] = CObject(sw/2.0 , -3.0*sh/2.0 , rad2);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
+   circvec[3] = CObject(sw/2.0 , 5.0*sh/2.0 , rad2);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
+   circvec[4] = CObject(sw/2.0 - 5 , sh/2.0 , 60);///sqrt(sw*sw/4.0 + sh*sh/4.0));/// This is our main circle boundary
+   circvec[4].SetAccel(0,100);
    
-//   return 0;
+   CollTable ctable;
+   ctable.ReserveN(100);
+
+   CObject* b1 = &circvec[0];
+   CObject* b2 = &circvec[1];
+   CObject* b3 = &circvec[2];
+   CObject* b4 = &circvec[3];
+   CObject* c1 = &circvec[4];
    
+   b1->fixed = true;
+   b2->fixed = true;
+   b3->fixed = true;
+   b4->fixed = true;
    
+   ctable.AddObject(b1);
+   ctable.AddObject(b2);
+   ctable.AddObject(b3);
+   ctable.AddObject(b4);
+   ctable.AddObject(c1);
    
-   
+      
    CObject o1(sw/2.0 , sh/2.0 , 50);
    CObject o2(sw/4.0 , sh/2.0 , 50);
    
@@ -78,6 +100,7 @@ int main(int argc , char** argv) {
    bool quit = false;
    bool redraw = true;
    bool clear = true;
+   bool pause = true;
    
    al_show_mouse_cursor(d);
    
@@ -90,28 +113,29 @@ int main(int argc , char** argv) {
             al_clear_to_color(al_map_rgb(0,0,0));
          }
          
-         o1.Draw(al_map_rgb(255,0,0));
-         o2.Draw(al_map_rgb(255,255,0));
+         double tfirst = 1000;
+         CObject* o = 0;
+         for (unsigned int i = 0 ; i < 4 ; ++i) {
+            o = &circvec[i];
+            o->Draw(al_map_rgb(255,255,255));
+         }
+         for (unsigned int i = 0 ; i < 4 ; ++i) {
+            o = &circvec[i];
+            double t = GetInterceptTime(*o , circvec[4]);
+         }
+         o = &circvec[4];
+         o->Draw(al_map_rgb(0,255,0));
          
          const double ddt = 0.25;
          double dt1;
          for (dt1 = -5.0 ; dt1 < 5.0 ; dt1 += ddt) {
             double dt2 = dt1 + ddt;
-            MoveInfo i1 = o2.FutureInfo(dt1);
-            MoveInfo i2 = o2.FutureInfo(dt2);
+            MoveInfo i1 = o->FutureInfo(dt1);
+            MoveInfo i2 = o->FutureInfo(dt2);
             DrawArrow(i1.pos , i2.pos , al_map_rgb(0,255,255));
          }
 
-         double t = GetInterceptTime(o1 , o2);
-         
-         if (t != -1.0) {
-            CObject c = o2;
-            c.Update(t);
-            c.DrawHollow(al_map_rgb(255,255,0));
-            al_draw_textf(f , al_map_rgb(255,255,255) , c.Mov().pos.x , c.Mov().pos.y , ALLEGRO_ALIGN_CENTRE , "%1.4lf" , t);
-         }
-         
-         al_draw_textf(f , al_map_rgb(255,255,255) , sw/2.0 , 10.0 , ALLEGRO_ALIGN_CENTER , "DT = %6.3lf" , t);
+///         al_draw_textf(f , al_map_rgb(255,255,255) , sw/2.0 , 10.0 , ALLEGRO_ALIGN_CENTER , "DT = %6.3lf" , t);
          
          al_set_target_backbuffer(d);
          al_draw_bitmap(buf , 0 , 0 , 0);
@@ -132,16 +156,23 @@ int main(int argc , char** argv) {
             clear = !clear;
             redraw = true;
          }
+         if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_P) {
+            pause = !pause;
+            redraw = true;
+         }
          if (ev.type == ALLEGRO_EVENT_KEY_DOWN && ev.keyboard.keycode == ALLEGRO_KEY_S) {
-            o2.SetSpeed(0,0);
-            o2.SetAccel(0,0);
+            c1->SetSpeed(0,0);
+            c1->SetAccel(0,0);
             redraw = true;
          }
          if (ev.type == ALLEGRO_EVENT_TIMER) {
             redraw = true;
             ++ticks;
             if (ticks == 1) {
-///               ctable.UpdateCollisionTableAndResolve(DT);
+               if (!pause) {
+                  ctable.MarkDirty();
+                  ctable.UpdateCollisionTableAndResolve(DT);
+               }
             }
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {
@@ -151,27 +182,27 @@ int main(int argc , char** argv) {
 //            msx = ev.mouse.x - sw/2.0;
 //            msy = ev.mouse.y - sh/2.0;
             if (lmb) {
-               o2.SetPos(msx,msy);
+               c1->SetPos(msx,msy);
             }
             else if (rmb) {
-               o2.SetSpeed(msx - o2.Pos().x , msy - o2.Pos().y);
+               c1->SetSpeed(msx - c1->Pos().x , msy - c1->Pos().y);
             }
             else if (mmb) {
-               o2.SetAccel(msx - o2.Pos().x , msy - o2.Pos().y);
+               c1->SetAccel(msx - c1->Pos().x , msy - c1->Pos().y);
             }
             /// msx,msy holds the vector from the center of the sceen to the mouse pointer
          }
          if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
             if (ev.mouse.button == 1) {
                lmb = true;
-               o2.SetPos(msx,msy);
+               c1->SetPos(msx,msy);
             }
             else if (ev.mouse.button == 2) {
-               o2.SetSpeed(msx - o2.Pos().x , msy - o2.Pos().y);
+               c1->SetSpeed(msx - c1->Pos().x , msy - c1->Pos().y);
                rmb = true;
             }
             else if (ev.mouse.button == 3) {
-               o2.SetAccel(msx - o2.Pos().x , msy - o2.Pos().y);
+               c1->SetAccel(msx - c1->Pos().x , msy - c1->Pos().y);
                mmb = true;
             }
          }
