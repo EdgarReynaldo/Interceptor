@@ -2,8 +2,14 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Merlin">
 		<Project filename="Merlin.cbp" />
-		<Project filename="BallBin.cbp" />
-		<Project filename="InterceptGraph.cbp" />
-		<Project filename="HucklePuck.cbp" />
+		<Project filename="BallBin.cbp">
+			<Depends filename="Merlin.cbp" />
+		</Project>
+		<Project filename="InterceptGraph.cbp">
+			<Depends filename="Merlin.cbp" />
+		</Project>
+		<Project filename="HucklePuck.cbp">
+			<Depends filename="Merlin.cbp" />
+		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>

@@ -93,11 +93,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add directory="include" />
-			<Add directory="E:/LIBS/LIBS81Distro/Allegro525_mingw-w64-gcc81_posix_dwarf/include" />
+			<Add directory="O:/Programming/Allegro524_mingw-w64-gcc81_posix_dwarf/include" />
 		</Compiler>
 		<Linker>
 			<Add directory="cbbuild/lib" />
-			<Add directory="E:/LIBS/LIBS81Distro/Allegro525_mingw-w64-gcc81_posix_dwarf/lib" />
+			<Add directory="O:/Programming/Allegro524_mingw-w64-gcc81_posix_dwarf/lib" />
 		</Linker>
 		<Unit filename="tests/HucklePuck.cpp" />
 		<Extensions>

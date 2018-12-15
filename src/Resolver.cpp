@@ -9,7 +9,7 @@
 #include "Vector2.hpp"
 
 
-double ELASTICITY = 1.0;/// No energy lost
+double ELASTICITY = 0.75;/// No energy lost
 //double ELASTICITY = 0.5;/// Half energy lost
 
 double EPSILON = 0.0001;

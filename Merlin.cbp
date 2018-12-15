@@ -40,11 +40,11 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="E:/LIBS/LIBS81Distro/Allegro524_mingw-w64-gcc81_posix_dwarf/include" />
+			<Add directory="O:/Programming/Allegro524_mingw-w64-gcc81_posix_dwarf/include" />
 			<Add directory="include/Merlin" />
 		</Compiler>
 		<Linker>
-			<Add directory="E:/LIBS/LIBS81Distro/Allegro524_mingw-w64-gcc81_posix_dwarf/lib" />
+			<Add directory="O:/Programming/Allegro524_mingw-w64-gcc81_posix_dwarf/lib" />
 		</Linker>
 		<Unit filename="include/Merlin.hpp" />
 		<Unit filename="include/Merlin/Arrow.hpp" />
